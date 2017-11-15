@@ -3,7 +3,7 @@ ________________________________________________________________________________
 |
 |       EEEEEE       sSSSS  MM       MM     EEEEEE                      LAPORTE Nathan 2Z2                                                              EEEEEE       sSSSS  MM       MM     EEEEEE
 |       EE         sS       MMMM   MMMM     EE                          laporte_n@esme.fr                           NOVEMBRE 2017                       EE         sS       MMMM   MMMM     EE
-|       EEEEE       sSS     MM  MM   MM     EEEEEE                      https://github.com/Sysmetryx/               PARTIE 3                            EEEEE       sSS     MM  MM   MM     EEEEEE
+|       EEEEE       sSS     MM  MM   MM     EEEEEE                      https://github.com/Sysmetryx/               PARTIE 4                            EEEEE       sSS     MM  MM   MM     EEEEEE
 |       EE            Ss    MM       MM     EE                                                                      GUI                                 EE            Ss    MM       MM     EE
 |       EEEEE    SSSSs      MM       MM     EEEEEE                                                                  IHM sous Qt                         EEEEE    SSSSs      MM       MM     EEEEEE
 |_____________________________________________________________________________________________________________________________________________________________________________________________________________________
@@ -27,13 +27,15 @@ public:
     void OpenButton();
     void validator(int n);
     bool isvalid();
+    void shuffle(int * tab, int taille);
     ~MainWindow();
 private:
     QLabel *m_pLabel;
     QPushButton *m_pButton[BUTTON_NBR];
     QPushButton *m_pButtonO;
     int valid_n = 0;
-    int const code[4] = {1, 9, 8, 0};
+    int tabButton[BUTTON_NBR];
+    int const code[4] = {1, 9, 8, 1};
     bool val[4] = {false, false, false, false};
 };
 

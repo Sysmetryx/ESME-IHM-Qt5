@@ -3,7 +3,7 @@ ________________________________________________________________________________
 |
 |       EEEEEE       sSSSS  MM       MM     EEEEEE                      LAPORTE Nathan 2Z2                                                              EEEEEE       sSSSS  MM       MM     EEEEEE
 |       EE         sS       MMMM   MMMM     EE                          laporte_n@esme.fr                           NOVEMBRE 2017                       EE         sS       MMMM   MMMM     EE
-|       EEEEE       sSS     MM  MM   MM     EEEEEE                      https://github.com/Sysmetryx/               PARTIE 3                            EEEEE       sSS     MM  MM   MM     EEEEEE
+|       EEEEE       sSS     MM  MM   MM     EEEEEE                      https://github.com/Sysmetryx/               PARTIE 4                            EEEEE       sSS     MM  MM   MM     EEEEEE
 |       EE            Ss    MM       MM     EE                                                                      GUI                                 EE            Ss    MM       MM     EE
 |       EEEEE    SSSSs      MM       MM     EEEEEE                                                                  IHM sous Qt                         EEEEE    SSSSs      MM       MM     EEEEEE
 |_____________________________________________________________________________________________________________________________________________________________________________________________________________________
@@ -19,7 +19,12 @@ MainWindow::MainWindow(QWidget *parent)
     QGridLayout *mainLayout = new QGridLayout;
     for(i = 0; i < BUTTON_NBR; i++)
     {
-        m_pButton[i] = new QPushButton(QString::number(i), this);
+        tabButton[i] = i;
+    }
+    shuffle(tabButton, BUTTON_NBR);
+    for(i = 0; i < BUTTON_NBR; i++)
+    {
+        m_pButton[i] = new QPushButton(QString::number(tabButton[i]), this);
         connect (m_pButton[i], &QPushButton::clicked, this, &MainWindow::OnClickedPushButton);
 
         if(i < 5)
@@ -33,6 +38,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     }
     m_pButtonO = new QPushButton("Ouvrir !", this);
+    m_pButtonO->setEnabled(false);
+    m_pButtonO->setStyleSheet("background-color: red;");
     connect (m_pButtonO, &QPushButton::clicked, this, &MainWindow::OnClickedPushButton);
     mainLayout->addWidget(m_pButtonO, 3, 0, 1, 5);
     this->setCentralWidget (new QWidget(this));
@@ -42,24 +49,28 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::OnClickedPushButton()
 {
     QPushButton *clickedButton = qobject_cast<QPushButton *>(sender());
-    //QMessageBox::about(this, "message", "You pushed the button " + clickedButton->text());
     if(clickedButton->text() != "Ouvrir !")
     {
         bool ok = false;
         int nombre = clickedButton->text().toInt(&ok, 10);
         validator(nombre);
-        if(isvalid())
+        if(isvalid()){
             m_pButtonO->setStyleSheet("background-color: green;");
-        if (!isvalid())
+            m_pButtonO->setEnabled(true);}
+        if (!isvalid()){
             m_pButtonO->setStyleSheet("background-color: red;");
+            m_pButtonO->setEnabled(false);}
 
     }
     else
     {
         if(isvalid())
-            QMessageBox::about(this, "Message", "Code juste !");
+        {
+            QMessageBox::about(this, "Message", "Code juste");
+            close();
+        }
         else
-            QMessageBox::about(this, "Message", "Code faux !");
+            QMessageBox::about(this, "Message", "Code faux!");
     }
 }
 
@@ -94,12 +105,25 @@ void MainWindow::validator(int n)
 
 void MainWindow::OpenButton()
 {
-   // QMessageBox::about(this, "message", "Vous avez essayé d'Ouvrir !");
+
 }
 
 
 
 MainWindow::~MainWindow()
 {
-    //QMessageBox::about(this, "Message", "Bye bye.");
+
+}
+
+void MainWindow::shuffle(int * tab, int taille)
+{
+    srand(time(NULL));
+    int i, temp, indice;
+    for (i = 0; i < taille; ++i)
+    {
+        indice = (int) rand()%taille;
+        temp = tab[i];
+        tab[i] = tab[indice];
+        tab[indice] = temp;
+    }
 }
