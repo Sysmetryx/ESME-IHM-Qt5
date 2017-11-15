@@ -3,7 +3,7 @@ ________________________________________________________________________________
 |
 |       EEEEEE       sSSSS  MM       MM     EEEEEE                      LAPORTE Nathan 2Z2                                                              EEEEEE       sSSSS  MM       MM     EEEEEE
 |       EE         sS       MMMM   MMMM     EE                          laporte_n@esme.fr                           NOVEMBRE 2017                       EE         sS       MMMM   MMMM     EE
-|       EEEEE       sSS     MM  MM   MM     EEEEEE                      https://github.com/Sysmetryx/               PARTIE 5                            EEEEE       sSS     MM  MM   MM     EEEEEE
+|       EEEEE       sSS     MM  MM   MM     EEEEEE                      https://github.com/Sysmetryx/               TD2 - PARTIE 1                       EEEEE       sSS     MM  MM   MM     EEEEEE
 |       EE            Ss    MM       MM     EE                                                                      GUI                                 EE            Ss    MM       MM     EE
 |       EEEEE    SSSSs      MM       MM     EEEEEE                                                                  IHM sous Qt                         EEEEE    SSSSs      MM       MM     EEEEEE
 |_____________________________________________________________________________________________________________________________________________________________________________________________________________________
@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     int i;
     QGridLayout *mainLayout = new QGridLayout;
+    mainLayout->addWidget(m_pTextEdit, 1, 0, 10, 5 );
     for(i = 0; i < BUTTON_NBR; i++)
     {
         tabButton[i] = i;
@@ -29,18 +30,27 @@ MainWindow::MainWindow(QWidget *parent)
 
         if(i < 5)
         {
-           mainLayout->addWidget(m_pButton[i], 1, i);
+           mainLayout->addWidget(m_pButton[i], 11, i);
         }
         else
         {
-           mainLayout->addWidget(m_pButton[i], 2, i-5);
+           mainLayout->addWidget(m_pButton[i], 12, i-5);
         }
 
     }
-    m_pButtonO = new QPushButton("Ouvrir !", this);
-    m_pButtonO->setEnabled(false);
-    connect (m_pButtonO, &QPushButton::clicked, this, &MainWindow::OnClickedPushButton);
-    mainLayout->addWidget(m_pButtonO, 3, 0, 1, 5);
+    //m_pButtonO = new QPushButton("Ouvrir !", this);
+    //m_pButtonO->setEnabled(false);
+    //m_pButtonO->setStyleSheet("background-color: red;");
+    //connect (m_pButtonO, &QPushButton::clicked, this, &MainWindow::OnClickedPushButton);
+    //mainLayout->addWidget(m_pButtonO, 13, 0, 1, 5);
+    m_pButtonC = new QPushButton("Chiffrer", this);
+    mainLayout->addWidget(m_pButtonC, 13, 0, 1, 2);
+    connect (m_pButtonC, &QPushButton::clicked, this, &MainWindow::chiffrage);
+    m_pButtonD = new QPushButton("Déchiffrer", this);
+    connect (m_pButtonD, &QPushButton::clicked, this, &MainWindow::dechiffrage);
+    m_pButtonD->setEnabled(false);
+    m_pButtonD->setStyleSheet("background-color: red;");
+    mainLayout->addWidget(m_pButtonD, 13, 3, 1, 2);
     this->setCentralWidget (new QWidget(this));
     this->centralWidget()->setLayout(mainLayout);
 }
@@ -48,30 +58,43 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::OnClickedPushButton()
 {
     QPushButton *clickedButton = qobject_cast<QPushButton *>(sender());
-    //QMessageBox::about(this, "message", "You pushed the button " + clickedButton->text());
-    if(clickedButton->text() != "Ouvrir !")
+    if(clickedButton->text() != "Chiffrer")
     {
         bool ok = false;
         int nombre = clickedButton->text().toInt(&ok, 10);
         validator(nombre);
         if(isvalid()){
-            m_pButtonO->setStyleSheet("background-color: green;");
-            m_pButtonO->setEnabled(true);}
+            m_pButtonD->setStyleSheet("background-color: green;");
+            m_pButtonD->setEnabled(true);}
         if (!isvalid()){
-            m_pButtonO->setStyleSheet("background-color: red;");
-            m_pButtonO->setEnabled(false);}
+            m_pButtonD->setStyleSheet("background-color: red;");
+            m_pButtonD->setEnabled(false);}
 
     }
     else
     {
         if(isvalid())
         {
-            QMessageBox::about(this, "Message", "Turn 1 : Unmask you, swamp, dark ritual, necropotence  !");
-            close();
+            QMessageBox::about(this, "Message", "Code juste");
+
         }
-        else
-            QMessageBox::about(this, "Message", "Code faux!");
     }
+}
+
+void MainWindow::chiffrage()
+{
+    QString str;
+    str = m_pTextEdit->toPlainText();
+    str = str.toUpper();
+    m_pTextEdit->setPlainText(str);
+}
+
+void MainWindow::dechiffrage()
+{
+    QString str;
+    str = m_pTextEdit->toPlainText();
+    str = str.toLower();
+    m_pTextEdit->setPlainText(str);
 }
 
 bool MainWindow::isvalid()
@@ -105,14 +128,14 @@ void MainWindow::validator(int n)
 
 void MainWindow::OpenButton()
 {
-   // QMessageBox::about(this, "message", "Vous avez essayé d'Ouvrir !");
+
 }
 
 
 
 MainWindow::~MainWindow()
 {
-    //QMessageBox::about(this, "Message", "Bye bye.");
+
 }
 
 void MainWindow::shuffle(int * tab, int taille)
