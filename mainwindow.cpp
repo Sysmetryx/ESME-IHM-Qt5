@@ -3,7 +3,7 @@ ________________________________________________________________________________
 |
 |       EEEEEE       sSSSS  MM       MM     EEEEEE                      LAPORTE Nathan 2Z2                                                              EEEEEE       sSSSS  MM       MM     EEEEEE
 |       EE         sS       MMMM   MMMM     EE                          laporte_n@esme.fr                           NOVEMBRE 2017                       EE         sS       MMMM   MMMM     EE
-|       EEEEE       sSS     MM  MM   MM     EEEEEE                      https://github.com/Sysmetryx/               TD2 - PARTIE 3                       EEEEE       sSS     MM  MM   MM     EEEEEE
+|       EEEEE       sSS     MM  MM   MM     EEEEEE                      https://github.com/Sysmetryx/               TD2 - PARTIE 4                       EEEEE       sSS     MM  MM   MM     EEEEEE
 |       EE            Ss    MM       MM     EE                                                                      GUI                                 EE            Ss    MM       MM     EE
 |       EEEEE    SSSSs      MM       MM     EEEEEE                                                                  IHM sous Qt                         EEEEE    SSSSs      MM       MM     EEEEEE
 |_____________________________________________________________________________________________________________________________________________________________________________________________________________________
@@ -13,6 +13,7 @@ ________________________________________________________________________________
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+    AsciiInit();
     int i;
     QGridLayout *mainLayout = new QGridLayout;
     mainLayout->addWidget(m_pTextEdit, 1, 0, 10, 5 );
@@ -78,7 +79,7 @@ void MainWindow::chiffrage()
         ascii = (int)strBA.at(i);
         if(ascii < 100)
         {
-            strOut.append(QString::number(ascii));
+            strOut.append(QString::number(AsciiTranslate(ascii)));
             strOut.append(" ");
         }
         else
@@ -107,6 +108,7 @@ void MainWindow::dechiffrage()
         {
             ok = false;
             ascii = word.toInt(&ok, 10);
+            ascii = AsciiDeTranslate(ascii);
             c = *(new QChar(ascii));
             strOut += c;
         }
@@ -124,6 +126,54 @@ void MainWindow::dechiffrage()
         val[i] = false;
     }
 
+}
+
+void MainWindow::AsciiInit()
+{
+    srand(KEY);
+    int size = 256;
+    for(int i = 0; i <size ; i++)
+    {
+        asciiTable[i] = 256;
+    }
+    while(!isFull())
+    {
+        for(int i = 0; i < size; i++)
+        {
+            random = rand()%255;
+            if(asciiTable[random] == 256)
+            {
+                asciiTable[random] = i;
+            }
+        }
+    }
+}
+
+bool MainWindow::isFull()
+{
+    for(int i = 0; i < 255; i++)
+    {
+        if(asciiTable[i] == 256)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+int MainWindow::AsciiTranslate(int nbr)
+{
+    return asciiTable[nbr];
+}
+
+int MainWindow::AsciiDeTranslate(int nbr)
+{
+    for(int i = 0; i < 256; i++)
+    {
+        if(asciiTable[i] == nbr)
+            return i;
+    }
+    return 0;
 }
 
 bool MainWindow::isNum(QString word)
