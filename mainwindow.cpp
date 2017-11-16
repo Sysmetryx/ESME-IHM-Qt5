@@ -3,7 +3,7 @@ ________________________________________________________________________________
 |
 |       EEEEEE       sSSSS  MM       MM     EEEEEE                      LAPORTE Nathan 2Z2                                                              EEEEEE       sSSSS  MM       MM     EEEEEE
 |       EE         sS       MMMM   MMMM     EE                          laporte_n@esme.fr                           NOVEMBRE 2017                       EE         sS       MMMM   MMMM     EE
-|       EEEEE       sSS     MM  MM   MM     EEEEEE                      https://github.com/Sysmetryx/               TD2 - PARTIE 1                       EEEEE       sSS     MM  MM   MM     EEEEEE
+|       EEEEE       sSS     MM  MM   MM     EEEEEE                      https://github.com/Sysmetryx/               TD2 - PARTIE 2                       EEEEE       sSS     MM  MM   MM     EEEEEE
 |       EE            Ss    MM       MM     EE                                                                      GUI                                 EE            Ss    MM       MM     EE
 |       EEEEE    SSSSs      MM       MM     EEEEEE                                                                  IHM sous Qt                         EEEEE    SSSSs      MM       MM     EEEEEE
 |_____________________________________________________________________________________________________________________________________________________________________________________________________________________
@@ -38,11 +38,6 @@ MainWindow::MainWindow(QWidget *parent)
         }
 
     }
-    //m_pButtonO = new QPushButton("Ouvrir !", this);
-    //m_pButtonO->setEnabled(false);
-    //m_pButtonO->setStyleSheet("background-color: red;");
-    //connect (m_pButtonO, &QPushButton::clicked, this, &MainWindow::OnClickedPushButton);
-    //mainLayout->addWidget(m_pButtonO, 13, 0, 1, 5);
     m_pButtonC = new QPushButton("Chiffrer", this);
     mainLayout->addWidget(m_pButtonC, 13, 0, 1, 2);
     connect (m_pButtonC, &QPushButton::clicked, this, &MainWindow::chiffrage);
@@ -58,8 +53,6 @@ MainWindow::MainWindow(QWidget *parent)
 void MainWindow::OnClickedPushButton()
 {
     QPushButton *clickedButton = qobject_cast<QPushButton *>(sender());
-    if(clickedButton->text() != "Chiffrer")
-    {
         bool ok = false;
         int nombre = clickedButton->text().toInt(&ok, 10);
         validator(nombre);
@@ -70,32 +63,70 @@ void MainWindow::OnClickedPushButton()
             m_pButtonD->setStyleSheet("background-color: red;");
             m_pButtonD->setEnabled(false);}
 
-    }
-    else
-    {
-        if(isvalid())
-        {
-            QMessageBox::about(this, "Message", "Code juste");
-
-        }
-    }
 }
 
 void MainWindow::chiffrage()
 {
-    QString str;
-    str = m_pTextEdit->toPlainText();
-    str = str.toUpper();
-    m_pTextEdit->setPlainText(str);
+    QString strIn = m_pTextEdit->toPlainText(), strOut = "";
+    QByteArray strBA = strIn.toLatin1();
+    int ascii = 0;
+    for(int i = 0; i < strIn.length(); i++)
+    {
+        ascii = (int)strBA.at(i);
+        if(ascii < 100)
+        {
+            strOut.append(QString::number(ascii));
+            strOut.append(" ");
+        }
+        else
+        {
+            strOut += strBA.at(i);
+            strOut.append(" ");
+        }
+    }
+    m_pTextEdit->setPlainText(strOut);
 }
 
 void MainWindow::dechiffrage()
 {
-    QString str;
-    str = m_pTextEdit->toPlainText();
-    str = str.toLower();
-    m_pTextEdit->setPlainText(str);
+    QString strIn = m_pTextEdit->toPlainText(), word = "", strOut = "";
+    QChar c;
+    int ascii =  0;
+    bool ok = false;
+    for(int i = 0; i < strIn.length(); i++)
+    {
+        while(strIn.at(i) != ' ' && i < strIn.length())
+        {
+            word += strIn.at(i);
+            i++;
+        }
+        if(isNum(word))
+        {
+            ok = false;
+            ascii = word.toInt(&ok, 10);
+            c = *(new QChar(ascii));
+            strOut += c;
+        }
+        else
+        {
+            strOut.append(word);
+        }
+        word = "";
+    }
+    m_pTextEdit->setPlainText(strOut);
 }
+
+bool MainWindow::isNum(QString word)
+{
+    bool rvalue = true;
+    for(int i = 0; i < word.length(); i++)
+    {
+        if(word.at(i) < 48 || word.at(i) > 57)
+            rvalue = false;
+    }
+    return rvalue;
+}
+
 
 bool MainWindow::isvalid()
 {
