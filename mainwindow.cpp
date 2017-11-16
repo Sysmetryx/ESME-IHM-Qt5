@@ -3,14 +3,12 @@ ________________________________________________________________________________
 |
 |       EEEEEE       sSSSS  MM       MM     EEEEEE                      LAPORTE Nathan 2Z2                                                              EEEEEE       sSSSS  MM       MM     EEEEEE
 |       EE         sS       MMMM   MMMM     EE                          laporte_n@esme.fr                           NOVEMBRE 2017                       EE         sS       MMMM   MMMM     EE
-|       EEEEE       sSS     MM  MM   MM     EEEEEE                      https://github.com/Sysmetryx/               TD2 - PARTIE 2                       EEEEE       sSS     MM  MM   MM     EEEEEE
+|       EEEEE       sSS     MM  MM   MM     EEEEEE                      https://github.com/Sysmetryx/               TD2 - PARTIE 3                       EEEEE       sSS     MM  MM   MM     EEEEEE
 |       EE            Ss    MM       MM     EE                                                                      GUI                                 EE            Ss    MM       MM     EE
 |       EEEEE    SSSSs      MM       MM     EEEEEE                                                                  IHM sous Qt                         EEEEE    SSSSs      MM       MM     EEEEEE
 |_____________________________________________________________________________________________________________________________________________________________________________________________________________________
 */
 #include "mainwindow.h"
-#include <QMessageBox>
-#include <QGridLayout>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -42,10 +40,16 @@ MainWindow::MainWindow(QWidget *parent)
     mainLayout->addWidget(m_pButtonC, 13, 0, 1, 2);
     connect (m_pButtonC, &QPushButton::clicked, this, &MainWindow::chiffrage);
     m_pButtonD = new QPushButton("Déchiffrer", this);
+    mainLayout->addWidget(m_pButtonD, 13, 3, 1, 2);
     connect (m_pButtonD, &QPushButton::clicked, this, &MainWindow::dechiffrage);
     m_pButtonD->setEnabled(false);
     m_pButtonD->setStyleSheet("background-color: red;");
-    mainLayout->addWidget(m_pButtonD, 13, 3, 1, 2);
+    m_pButtonO = new QPushButton("Ouvrir", this);
+    mainLayout->addWidget(m_pButtonO, 14, 0, 1, 2);
+    connect(m_pButtonO, &QPushButton::clicked, this, &MainWindow::Fopen);
+    m_pButtonS = new QPushButton("Sauvegarder", this);
+    mainLayout->addWidget(m_pButtonS, 14, 3, 1, 2);
+    connect(m_pButtonS, &QPushButton::clicked, this, &MainWindow::Fsave);
     this->setCentralWidget (new QWidget(this));
     this->centralWidget()->setLayout(mainLayout);
 }
@@ -62,7 +66,6 @@ void MainWindow::OnClickedPushButton()
         if (!isvalid()){
             m_pButtonD->setStyleSheet("background-color: red;");
             m_pButtonD->setEnabled(false);}
-
 }
 
 void MainWindow::chiffrage()
@@ -89,15 +92,15 @@ void MainWindow::chiffrage()
 
 void MainWindow::dechiffrage()
 {
-    QString strIn = m_pTextEdit->toPlainText(), word = "", strOut = "";
+    QString strIn = m_pTextEdit->toPlainText(), word = "", strOut;
     QChar c;
     int ascii =  0;
     bool ok = false;
     for(int i = 0; i < strIn.length(); i++)
     {
-        while(strIn.at(i) != ' ' && i < strIn.length())
+        while(strIn[i] != ' ' && i < strIn.length())
         {
-            word += strIn.at(i);
+            word += strIn[i];
             i++;
         }
         if(isNum(word))
@@ -114,6 +117,13 @@ void MainWindow::dechiffrage()
         word = "";
     }
     m_pTextEdit->setPlainText(strOut);
+    m_pButtonD->setStyleSheet("background-color: red;");
+    m_pButtonD->setEnabled(false);
+    for(int i = 0; i < 4; i++)
+    {
+        val[i] = false;
+    }
+
 }
 
 bool MainWindow::isNum(QString word)
@@ -126,7 +136,6 @@ bool MainWindow::isNum(QString word)
     }
     return rvalue;
 }
-
 
 bool MainWindow::isvalid()
 {
@@ -162,7 +171,30 @@ void MainWindow::OpenButton()
 
 }
 
+void MainWindow::Fopen()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, "Ouvrir", "", "Texte chiffre (*.ch);; Texte dechiffre (*.dech)");
+    QFile file(fileName);
+    file.open(QIODevice::ReadOnly | QIODevice::Text);
+    QTextStream stream (&file);
+    m_pTextEdit->setText(stream.readAll());
+}
 
+void MainWindow::Fsave()
+{
+    QString fileName = QFileDialog::getSaveFileName(this, "Sauvegarde", "", "Texte chiffre (*.ch);; Texte dechiffre (*.dech)");
+    QFile file (fileName);
+    if (!file.open(QIODevice::WriteOnly |QIODevice::Text))
+    {
+        close();
+    }
+    else
+    {
+        QTextStream stream(&file);
+        stream << m_pTextEdit->toPlainText() << endl;
+        file.close();
+    }
+}
 
 MainWindow::~MainWindow()
 {
